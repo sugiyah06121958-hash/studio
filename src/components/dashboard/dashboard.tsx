@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Sidebar,
   SidebarContent,
@@ -13,7 +13,7 @@ import { Watchlist } from './watchlist';
 import { StockPriceCard } from './stock-price-card';
 import { FundamentalAnalysisCard, TechnicalAnalysisCard } from './analysis-cards';
 import { AutomatedConclusionCard, BuySellSignalCard, SimplePredictionCard } from './ai-cards';
-import { getStockDataForWatchlist } from '@/lib/alpha-vantage';
+import { getStockDataForWatchlist, getStockDetails } from '@/lib/alpha-vantage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { StockSearch } from './stock-search';
 
@@ -59,16 +59,30 @@ export function Dashboard() {
       }
     }
     fetchData();
-  }, [watchlistTickers]);
+  }, []); // Hanya dijalankan sekali saat komponen dimuat
 
-  const handleAddToWatchlist = (ticker: string) => {
+  const handleAddToWatchlist = useCallback(async (ticker: string) => {
     if (!watchlistTickers.includes(ticker)) {
-        const newWatchlist = [...watchlistTickers, ticker];
-        setWatchlistTickers(newWatchlist);
-        // Automatically select the newly added stock
-        setSelectedTicker(ticker);
+        setWatchlistTickers(prev => [...prev, ticker]);
+        
+        try {
+            const newStockData = await getStockDetails(ticker);
+            setStocks(prev => ({
+                ...prev,
+                [ticker]: newStockData
+            }));
+            setSelectedTicker(ticker);
+        } catch(err) {
+            console.error(`Gagal mengambil data untuk ${ticker}`, err);
+            // Hapus kembali dari daftar jika gagal
+            setWatchlistTickers(prev => prev.filter(t => t !== ticker));
+            setError(`Tidak dapat menemukan data untuk ${ticker}.`);
+        }
+    } else {
+      // Jika saham sudah ada, cukup pilih
+      setSelectedTicker(ticker);
     }
-  };
+  }, [watchlistTickers]);
 
 
   const stockData = stocks ? stocks[selectedTicker] : null;
@@ -100,7 +114,7 @@ export function Dashboard() {
           isLoading={isLoading}
         />
         {isLoading && <DashboardSkeleton />}
-        {error && <div className="p-8 text-center text-red-500">{error}</div>}
+        {error && !isLoading && <div className="p-8 text-center text-red-500">{error}</div>}
         {!isLoading && !error && stockData && (
           <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-background">
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">

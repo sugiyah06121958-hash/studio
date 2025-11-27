@@ -1,8 +1,6 @@
-
 "use client";
 
-import { useState, useCallback, useEffect } from 'react';
-import { useDebounce } from '@/hooks/use-debounce'; 
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { searchSymbols } from '@/lib/alpha-vantage';
@@ -19,29 +17,24 @@ export function StockSearch({ onAddToWatchlist }: StockSearchProps) {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const debouncedQuery = useDebounce(query, 300);
 
-  useEffect(() => {
-    if (debouncedQuery) {
-      const fetchResults = async () => {
-        setIsLoading(true);
-        try {
-          const searchData = await searchSymbols(debouncedQuery);
-          setResults(searchData);
-          if (!isPopoverOpen) setIsPopoverOpen(true);
-        } catch (error) {
-          console.error("Search failed:", error);
-          setResults([]);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      fetchResults();
-    } else {
-      setResults([]);
-      // Jangan tutup popover di sini agar pengguna bisa memilih
+  const handleSearch = async () => {
+    if (!query) {
+        setResults([]);
+        return;
     }
-  }, [debouncedQuery, isPopoverOpen]);
+    setIsLoading(true);
+    if (!isPopoverOpen) setIsPopoverOpen(true);
+    try {
+      const searchData = await searchSymbols(query);
+      setResults(searchData);
+    } catch (error) {
+      console.error("Search failed:", error);
+      setResults([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSelect = (ticker: string) => {
     onAddToWatchlist(ticker);
@@ -53,18 +46,30 @@ export function StockSearch({ onAddToWatchlist }: StockSearchProps) {
   return (
     <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverTrigger asChild>
-            <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <div className="relative flex items-center">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <Input
                     placeholder="Cari saham..."
                     value={query}
-                    onChange={(e) => {
-                        setQuery(e.target.value);
-                        if (!isPopoverOpen) setIsPopoverOpen(true);
+                    onChange={(e) => setQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleSearch();
+                        }
                     }}
-                    className="pl-9"
-                    onFocus={() => { if (results.length > 0) setIsPopoverOpen(true); }}
+                    className="pl-9 pr-10"
                 />
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="absolute right-1 h-8 w-8"
+                    onClick={handleSearch}
+                    disabled={isLoading}
+                    aria-label="Cari"
+                >
+                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                </Button>
             </div>
       </PopoverTrigger>
       <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
@@ -88,9 +93,9 @@ export function StockSearch({ onAddToWatchlist }: StockSearchProps) {
             ))}
           </div>
         )}
-        {!isLoading && debouncedQuery && results.length === 0 && (
+        {!isLoading && query && results.length === 0 && (
           <div className="p-4 text-center text-sm text-muted-foreground">
-            Tidak ada hasil untuk &quot;{debouncedQuery}&quot;
+            Tidak ada hasil untuk &quot;{query}&quot;
           </div>
         )}
       </PopoverContent>

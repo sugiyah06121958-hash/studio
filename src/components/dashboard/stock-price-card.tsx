@@ -42,8 +42,8 @@ export function StockPriceCard({ stock, ticker }: StockPriceCardProps) {
 
   const handleSetAlert = () => {
     toast({
-      title: "Alert Set",
-      description: `You will be notified for significant price movements for ${ticker}.`,
+      title: "Peringatan Dibuat",
+      description: `Anda akan diberi tahu untuk pergerakan harga yang signifikan untuk ${ticker}.`,
       variant: 'default',
     });
   }
@@ -78,7 +78,7 @@ export function StockPriceCard({ stock, ticker }: StockPriceCardProps) {
           <ChartContainer
             config={{
               price: {
-                label: 'Price',
+                label: 'Harga',
                 color: isPositiveChange ? 'hsl(var(--chart-2))' : 'hsl(var(--chart-5))',
               },
             }}
@@ -117,22 +117,22 @@ export function StockPriceCard({ stock, ticker }: StockPriceCardProps) {
           <AlertDialogTrigger asChild>
             <Button variant="outline">
               <BellPlus className="mr-2 h-4 w-4" />
-              Set Alert
+              Atur Peringatan
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Set Price Alert for {ticker}</AlertDialogTitle>
+              <AlertDialogTitle>Atur Peringatan Harga untuk {ticker}</AlertDialogTitle>
               <AlertDialogDescription>
-                Get notified when the price of {ticker} hits your target.
+                Dapatkan notifikasi ketika harga {ticker} mencapai target Anda.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <div className="grid gap-4 py-4">
                <Input id="price-target" defaultValue={stock.price.toFixed(2)} className="col-span-3" />
             </div>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleSetAlert}>Set Alert</AlertDialogAction>
+              <AlertDialogCancel>Batal</AlertDialogCancel>
+              <AlertDialogAction onClick={handleSetAlert}>Atur Peringatan</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

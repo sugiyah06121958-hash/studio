@@ -28,7 +28,7 @@ export function Header({ stocks, selectedTicker, setSelectedTicker }: HeaderProp
       <div className="ml-auto flex items-center gap-4">
         <Select value={selectedTicker} onValueChange={setSelectedTicker}>
           <SelectTrigger className="w-40 md:w-48">
-            <SelectValue placeholder="Select a stock" />
+            <SelectValue placeholder="Pilih saham" />
           </SelectTrigger>
           <SelectContent>
             {Object.entries(stocks).map(([ticker, data]) => (

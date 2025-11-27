@@ -39,7 +39,7 @@ const analyzeNews = ai.defineTool(
   },
   async (input) => {
     // Placeholder implementation - replace with actual news analysis logic
-    return `News analysis for ${input.ticker}: No significant news found.`;
+    return `Analisis berita untuk ${input.ticker}: Tidak ada berita signifikan yang ditemukan.`;
   }
 );
 
@@ -48,14 +48,14 @@ const prompt = ai.definePrompt({
   input: {schema: GenerateBuySellSignalsInputSchema},
   output: {schema: GenerateBuySellSignalsOutputSchema},
   tools: [analyzeNews],
-  system: `You are an expert financial analyst. Based on the technical analysis, fundamental analysis, and recent news, provide a buy/sell signal for the given stock.
+  system: `Anda adalah seorang analis keuangan ahli. Berdasarkan analisis teknis, analisis fundamental, dan berita terkini, berikan sinyal beli/jual untuk saham yang diberikan.
 
-Consider the following:
-- Technical Analysis: {{{technicalAnalysis}}}
-- Fundamental Analysis: {{{fundamentalAnalysis}}}
+Pertimbangkan hal berikut:
+- Analisis Teknis: {{{technicalAnalysis}}}
+- Analisis Fundamental: {{{fundamentalAnalysis}}}
 
-Use the analyzeNews tool to check for recent news related to the stock. Incorporate any relevant news into your recommendation.`,
-  prompt: `Given the above analysis, what is your buy/sell signal for ${'{{{ticker}}}'}? Explain your reasoning.`, // Changed ticker reference to Handlebars syntax
+Gunakan alat analyzeNews untuk memeriksa berita terkini terkait saham tersebut. Masukkan berita relevan apa pun ke dalam rekomendasi Anda.`,
+  prompt: `Mengingat analisis di atas, apa sinyal beli/jual Anda untuk ${'{{{ticker}}}'}? Jelaskan alasan Anda.`, // Changed ticker reference to Handlebars syntax
 });
 
 const generateBuySellSignalsFlow = ai.defineFlow(

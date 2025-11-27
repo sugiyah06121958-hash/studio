@@ -24,7 +24,7 @@ export type AutomatedStockConclusionInput = z.infer<
 
 const AutomatedStockConclusionOutputSchema = z.object({
   conclusion: z
-    .string()
+    .enum(['Beli', 'Tahan', 'Jual'])
     .describe('The automated conclusion (Buy/Hold/Sell) for the stock.'),
 });
 export type AutomatedStockConclusionOutput = z.infer<
@@ -41,13 +41,13 @@ const provideAutomatedStockConclusionPrompt = ai.definePrompt({
   name: 'provideAutomatedStockConclusionPrompt',
   input: {schema: AutomatedStockConclusionInputSchema},
   output: {schema: AutomatedStockConclusionOutputSchema},
-  prompt: `Given the following technical analysis, fundamental analysis, and buy/sell signals for the stock ticker {{{ticker}}}, provide an automated conclusion (Buy/Hold/Sell).
+  prompt: `Mengingat analisis teknis, analisis fundamental, dan sinyal beli/jual berikut untuk ticker saham {{{ticker}}}, berikan kesimpulan otomatis (Beli/Tahan/Jual).
 
-Technical Analysis: {{{technicalAnalysis}}}
-Fundamental Analysis: {{{fundamentalAnalysis}}}
-Buy/Sell Signals: {{{buySellSignals}}}
+Analisis Teknis: {{{technicalAnalysis}}}
+Analisis Fundamental: {{{fundamentalAnalysis}}}
+Sinyal Beli/Jual: {{{buySellSignals}}}
 
-Conclusion:`,
+Kesimpulan:`,
 });
 
 const provideAutomatedStockConclusionFlow = ai.defineFlow(

@@ -23,7 +23,7 @@ export function Dashboard() {
     <div className="flex min-h-screen w-full">
       <Sidebar className="border-r flex flex-col">
         <SidebarHeader className="p-4">
-          <h2 className="text-lg font-semibold">Watchlist</h2>
+          <h2 className="text-lg font-semibold">Daftar Pantau</h2>
         </SidebarHeader>
         <SidebarContent>
           <Watchlist

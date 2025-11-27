@@ -18,7 +18,20 @@ interface AICardProps {
   ticker: string;
 }
 
-const getSignalBadgeVariant = (signal: 'Buy' | 'Hold' | 'Sell' | string) => {
+const getSignalBadgeVariant = (signal: 'Beli' | 'Tahan' | 'Jual' | string) => {
+    switch (signal) {
+      case 'Beli':
+        return 'default';
+      case 'Jual':
+        return 'destructive';
+      case 'Tahan':
+        return 'secondary';
+      default:
+        return 'outline';
+    }
+  };
+  
+const getSignalBadgeVariantEN = (signal: 'Buy' | 'Hold' | 'Sell' | string) => {
     switch (signal) {
       case 'Buy':
         return 'default';
@@ -29,7 +42,21 @@ const getSignalBadgeVariant = (signal: 'Buy' | 'Hold' | 'Sell' | string) => {
       default:
         return 'outline';
     }
-  };
+};
+
+const translateSignal = (signal: 'Buy' | 'Hold' | 'Sell' | string) => {
+    switch (signal) {
+        case 'Buy':
+            return 'Beli';
+        case 'Sell':
+            return 'Jual';
+        case 'Hold':
+            return 'Tahan';
+        default:
+            return signal;
+    }
+}
+
 
 export function BuySellSignalCard({ stockData, ticker }: AICardProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -57,7 +84,7 @@ export function BuySellSignalCard({ stockData, ticker }: AICardProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <BrainCircuit className="h-5 w-5 text-primary" />
-          AI Buy/Sell Signals
+          Sinyal Beli/Jual AI
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -65,8 +92,8 @@ export function BuySellSignalCard({ stockData, ticker }: AICardProps) {
         {result && (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-                <span className="font-semibold">Signal:</span>
-                <Badge variant={getSignalBadgeVariant(result.signal)}>{result.signal}</Badge>
+                <span className="font-semibold">Sinyal:</span>
+                <Badge variant={getSignalBadgeVariantEN(result.signal)}>{translateSignal(result.signal)}</Badge>
             </div>
             <p className="text-sm text-muted-foreground">{result.reason}</p>
           </div>
@@ -74,7 +101,7 @@ export function BuySellSignalCard({ stockData, ticker }: AICardProps) {
         {!isLoading && (
           <Button onClick={handleGenerate}>
             <Sparkles className="mr-2 h-4 w-4" />
-            Generate Signal
+            Hasilkan Sinyal
           </Button>
         )}
       </CardContent>
@@ -94,7 +121,7 @@ export function AutomatedConclusionCard({ stockData, ticker }: AICardProps) {
         ticker,
         technicalAnalysis: JSON.stringify(stockData.technicalAnalysis),
         fundamentalAnalysis: JSON.stringify(stockData.fundamentalAnalysis),
-        buySellSignals: 'Generated based on a combination of TA and FA.',
+        buySellSignals: 'Dihasilkan berdasarkan kombinasi TA dan FA.',
       });
       setResult(res);
     } catch (error) {
@@ -109,21 +136,21 @@ export function AutomatedConclusionCard({ stockData, ticker }: AICardProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <Bot className="h-5 w-5 text-primary" />
-          Automated Conclusion
+          Kesimpulan Otomatis
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {isLoading && <Loader2 className="h-8 w-8 animate-spin text-primary" />}
         {result && (
           <div className="flex items-center gap-2">
-            <span className="font-semibold">Recommendation:</span>
+            <span className="font-semibold">Rekomendasi:</span>
             <Badge variant={getSignalBadgeVariant(result.conclusion)}>{result.conclusion}</Badge>
           </div>
         )}
         {!isLoading && (
           <Button onClick={handleGenerate}>
             <Sparkles className="mr-2 h-4 w-4" />
-            Generate Conclusion
+            Hasilkan Kesimpulan
           </Button>
         )}
       </CardContent>
@@ -142,7 +169,7 @@ export function SimplePredictionCard({ stockData, ticker }: AICardProps) {
         const res = await predictFutureStockPrice({
           ticker,
           timeSeriesData: JSON.stringify(stockData.historicalData),
-          financialNews: 'Market sentiment is currently mixed due to recent inflation reports.',
+          financialNews: 'Sentimen pasar saat ini beragam karena laporan inflasi terbaru.',
         });
         setResult(res);
       } catch (error) {
@@ -157,7 +184,7 @@ export function SimplePredictionCard({ stockData, ticker }: AICardProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <Sparkles className="h-5 w-5 text-primary" />
-            Simple Prediction
+            Prediksi Sederhana
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -165,11 +192,11 @@ export function SimplePredictionCard({ stockData, ticker }: AICardProps) {
           {result && (
             <div className="space-y-2">
               <div>
-                <span className="font-semibold">Prediction: </span>
+                <span className="font-semibold">Prediksi: </span>
                 <span className="font-mono text-lg">{result.prediction}</span>
               </div>
               <div>
-                <span className="font-semibold">Confidence: </span>
+                <span className="font-semibold">Keyakinan: </span>
                 <span className="font-mono">{((result.confidence || 0) * 100).toFixed(0)}%</span>
               </div>
               <p className="text-sm text-muted-foreground">{result.rationale}</p>
@@ -178,7 +205,7 @@ export function SimplePredictionCard({ stockData, ticker }: AICardProps) {
           {!isLoading && (
             <Button onClick={handleGenerate}>
               <Sparkles className="mr-2 h-4 w-4" />
-              Generate Prediction
+              Hasilkan Prediksi
             </Button>
           )}
         </CardContent>

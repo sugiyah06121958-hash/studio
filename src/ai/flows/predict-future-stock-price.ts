@@ -60,22 +60,22 @@ const predictFutureStockPricePrompt = ai.definePrompt({
   input: {schema: PredictFutureStockPriceInputSchema},
   output: {schema: PredictFutureStockPriceOutputSchema},
   tools: [assessNewsRelevance],
-  prompt: `You are a stock price prediction expert.
+  prompt: `Anda adalah seorang ahli prediksi harga saham.
 
-  Based on the provided time series data and financial news, predict the future stock price for the ticker symbol: {{{ticker}}}.
+  Berdasarkan data deret waktu dan berita keuangan yang diberikan, prediksikan harga saham di masa depan untuk simbol ticker: {{{ticker}}}.
 
-  Time Series Data: {{{timeSeriesData}}}
-  Financial News: {{{financialNews}}}
+  Data Deret Waktu: {{{timeSeriesData}}}
+  Berita Keuangan: {{{financialNews}}}
 
-  Consider the relevance of the financial news using the assessNewsRelevance tool.
+  Pertimbangkan relevansi berita keuangan menggunakan alat assessNewsRelevance.
 
-  Provide a prediction, a confidence level (0-1), and a rationale for your prediction.
+  Berikan prediksi, tingkat kepercayaan (0-1), dan alasan untuk prediksi Anda.
 
-  Follow this format for your output:
+  Ikuti format ini untuk output Anda:
   {
-    "prediction": "Predicted stock price",
+    "prediction": "Prediksi harga saham",
     "confidence": 0.8,
-    "rationale": "Rationale for the prediction"
+    "rationale": "Alasan untuk prediksi"
   }`,
 });
 

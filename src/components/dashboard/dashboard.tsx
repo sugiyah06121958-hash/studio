@@ -16,6 +16,7 @@ import { AutomatedConclusionCard, BuySellSignalCard, SimplePredictionCard } from
 import { getStockDataForWatchlist, getStockDetails } from '@/lib/alpha-vantage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { StockSearch } from './stock-search';
+import { useToast } from '@/hooks/use-toast';
 
 const initialWatchlist = ['BBCA', 'GOTO', 'AAPL', 'GOOGL', 'MSFT', 'TSLA', 'BTC', 'RD-PASARUANG'];
 
@@ -43,6 +44,7 @@ export function Dashboard() {
   const [stocks, setStocks] = useState<StockDataCollection | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     async function fetchData() {
@@ -63,8 +65,24 @@ export function Dashboard() {
 
   const handleAddToWatchlist = useCallback(async (ticker: string) => {
     if (!watchlistTickers.includes(ticker)) {
+        // Optimistically add to watchlist
         setWatchlistTickers(prev => [...prev, ticker]);
         
+        // Show loading state for the new stock
+        setStocks(prev => ({
+            ...prev,
+            [ticker]: {
+                name: 'Memuat...',
+                price: 0,
+                change: 0,
+                changePercent: 0,
+                historicalData: [],
+                technicalAnalysis: { movingAverage: { "50day": 0, "200day": 0 }, rsi: 0, macd: 0 },
+                fundamentalAnalysis: { marketCap: "N/A", peRatio: "N/A", eps: 0, dividendYield: "N/A", debtToEquity: 0 },
+                category: 'Saham',
+            }
+        }));
+
         try {
             const newStockData = await getStockDetails(ticker);
             setStocks(prev => ({
@@ -72,17 +90,27 @@ export function Dashboard() {
                 [ticker]: newStockData
             }));
             setSelectedTicker(ticker);
-        } catch(err) {
+        } catch(err: any) {
             console.error(`Gagal mengambil data untuk ${ticker}`, err);
             // Hapus kembali dari daftar jika gagal
             setWatchlistTickers(prev => prev.filter(t => t !== ticker));
+            setStocks(prev => {
+              const newStocks = {...prev};
+              delete newStocks[ticker];
+              return newStocks;
+            });
             setError(`Tidak dapat menemukan data untuk ${ticker}.`);
+            toast({
+              variant: "destructive",
+              title: "Gagal Menambahkan Saham",
+              description: err.message || `Tidak dapat menemukan data untuk ${ticker}.`,
+            });
         }
     } else {
       // Jika saham sudah ada, cukup pilih
       setSelectedTicker(ticker);
     }
-  }, [watchlistTickers]);
+  }, [watchlistTickers, toast]);
 
 
   const stockData = stocks ? stocks[selectedTicker] : null;
@@ -138,3 +166,5 @@ export function Dashboard() {
     </div>
   );
 }
+
+    

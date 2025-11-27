@@ -115,53 +115,51 @@ const mockApiData: StockDataCollection = {
     }
   };
 
-  const MOCK_SEARCH_RESULTS = [
-    { '1. symbol': 'BBNI', '2. name': 'Bank Negara Indonesia', '3. type': 'Equity', '4. region': 'Indonesia', '8. currency': 'IDR' },
-    { '1. symbol': 'TLKM', '2. name': 'Telkom Indonesia', '3. type': 'Equity', '4. region': 'Indonesia', '8. currency': 'IDR' },
-    { '1. symbol': 'NVDA', '2. name': 'NVIDIA Corporation', '3. type': 'Equity', '4. region': 'United States', '8. currency': 'USD' },
-    { '1. symbol': 'AMZN', '2. name': 'Amazon.com Inc.', '3. type': 'Equity', '4. region': 'United States', '8. currency': 'USD' },
-  ];
-
 // --- API Fetching Logic ---
 
 /**
  * Searches for stock symbols based on keywords.
- * This is a mock function.
+ * This function now makes a live API call to Alpha Vantage.
  */
 export async function searchSymbols(keywords: string): Promise<SearchResult[]> {
     console.log(`Searching for symbols with keywords: ${keywords}`);
     if (!keywords) return [];
   
-    // In a real app, you would use fetch:
-    // const url = `${BASE_URL}?function=SYMBOL_SEARCH&keywords=${keywords}&apikey=${API_KEY}`;
-    // const response = await fetch(url);
-    // const data = await response.json();
-    // if (data.Note) { // API limit reached
-    //   console.warn(data.Note);
-    //   return MOCK_SEARCH_RESULTS;
-    // }
-    // return data.bestMatches.map((match: any) => ({...}));
-  
-    await new Promise(resolve => setTimeout(resolve, 300)); // Simulate network delay
-    const lowerKeywords = keywords.toLowerCase();
-    const filtered = MOCK_SEARCH_RESULTS.filter(
-        (r) =>
-          r['1. symbol'].toLowerCase().includes(lowerKeywords) ||
-          r['2. name'].toLowerCase().includes(lowerKeywords)
-      );
+    const url = `${BASE_URL}?function=SYMBOL_SEARCH&keywords=${keywords}&apikey=${API_KEY}`;
+    
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
 
-    return filtered.map(item => ({
-        symbol: item['1. symbol'],
-        name: item['2. name'],
-        region: item['4. region'],
-        currency: item['8. currency'],
-    }));
+        if (data.Note) {
+            // This happens when the API limit is reached.
+            console.warn("Alpha Vantage API limit reached:", data.Note);
+            // We can return an empty array or handle it as an error.
+            return []; 
+        }
+
+        if (!data.bestMatches || !Array.isArray(data.bestMatches)) {
+            console.error("Invalid search results format:", data);
+            return [];
+        }
+
+        return data.bestMatches.map((item: any) => ({
+            symbol: item['1. symbol'],
+            name: item['2. name'],
+            region: item['4. region'],
+            currency: item['8. currency'],
+        }));
+
+    } catch (error) {
+        console.error("Error fetching from Alpha Vantage API:", error);
+        throw new Error("Gagal melakukan pencarian saham. Silakan coba lagi.");
+    }
 }
 
 
 /**
  * Fetches data for multiple tickers.
- * NOTE: The free version of Alpha Vantage has a low rate limit (e.g., 5 calls per minute).
+ * NOTE: The free version of Alpha Vantage has a low rate limit (e.g., 25 calls per day).
  * Calling this for a long list of tickers might get you blocked.
  * For this example, we are using a mock implementation to avoid this.
  */
@@ -178,12 +176,12 @@ export async function getStockDataForWatchlist(tickers: string[]): Promise<Stock
       results[ticker] = mockApiData[ticker];
     } else {
       // If the ticker is new, create some mock data for it.
-      const isUS = ticker.length <= 4 && ticker.toUpperCase() === ticker;
+      const isUS = ticker.length <= 4 && ticker.toUpperCase() === ticker && !ticker.includes('.');
       const basePrice = isUS ? Math.random() * 500 + 50 : Math.random() * 10000 + 500;
       results[ticker] = {
-        name: `${ticker} Name`,
+        name: `${ticker} Company Name`,
         price: basePrice,
-        change: (Math.random() - 0.5) * 10,
+        change: (Math.random() - 0.5) * basePrice * 0.05,
         changePercent: (Math.random() - 0.5) * 5,
         historicalData: generateHistoricalData(basePrice, 30, 0.05),
         technicalAnalysis: { movingAverage: { "50day": basePrice * 0.98, "200day": basePrice * 0.95 }, rsi: 50, macd: 0 },
@@ -210,9 +208,30 @@ export async function getStockDetails(ticker: string): Promise<StockData> {
     
     await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
 
+    // First, check if the data exists in our initial mock data
     if (mockApiData[ticker]) {
         return mockApiData[ticker];
     }
 
-    throw new Error(`Data for ticker ${ticker} not found.`);
+    // If not, we will generate new mock data for the requested ticker
+    console.log(`No mock data for ${ticker}, generating new mock data.`);
+    const isUS = ticker.length <= 4 && ticker.toUpperCase() === ticker && !ticker.includes('.');
+    const basePrice = isUS ? Math.random() * 500 + 50 : Math.random() * 10000 + 500;
+    const newStockData: StockData = {
+      name: `${ticker} Company Name`,
+      price: basePrice,
+      change: (Math.random() - 0.5) * basePrice * 0.05,
+      changePercent: (Math.random() - 0.5) * 5,
+      historicalData: generateHistoricalData(basePrice, 30, 0.05),
+      technicalAnalysis: { movingAverage: { "50day": basePrice * 0.98, "200day": basePrice * 0.95 }, rsi: 50, macd: 0 },
+      fundamentalAnalysis: { marketCap: "N/A", peRatio: "N/A", eps: 0, dividendYield: "N/A", debtToEquity: 0 },
+      category: isUS ? 'Saham AS' : 'Saham',
+    };
+    
+    // Add to the main mock data object so it can be retrieved next time
+    mockApiData[ticker] = newStockData;
+
+    return newStockData;
 }
+
+    

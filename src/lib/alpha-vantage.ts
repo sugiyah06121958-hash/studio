@@ -2,10 +2,11 @@
 // In a real application, you would use fetch to make API calls to Alpha Vantage.
 // You would also need to handle API key management and error handling.
 
-import type { StockData, StockDataCollection, HistoricalData } from './types';
+import type { StockData, StockDataCollection, HistoricalData, SearchResult } from './types';
 
-const API_KEY = process.env.ALPHA_VANTAGE_API_KEY || 'demo';
+const API_KEY = process.env.NEXT_PUBLIC_ALPHA_VANTAGE_API_KEY || 'demo';
 const BASE_URL = 'https://www.alphavantage.co/query';
+
 
 // --- Mock Data Generation ---
 // This section is for demonstration purposes since we can't make live API calls in this environment.
@@ -114,7 +115,49 @@ const mockApiData: StockDataCollection = {
     }
   };
 
+  const MOCK_SEARCH_RESULTS = [
+    { '1. symbol': 'BBNI', '2. name': 'Bank Negara Indonesia', '3. type': 'Equity', '4. region': 'Indonesia', '8. currency': 'IDR' },
+    { '1. symbol': 'TLKM', '2. name': 'Telkom Indonesia', '3. type': 'Equity', '4. region': 'Indonesia', '8. currency': 'IDR' },
+    { '1. symbol': 'NVDA', '2. name': 'NVIDIA Corporation', '3. type': 'Equity', '4. region': 'United States', '8. currency': 'USD' },
+    { '1. symbol': 'AMZN', '2. name': 'Amazon.com Inc.', '3. type': 'Equity', '4. region': 'United States', '8. currency': 'USD' },
+  ];
+
 // --- API Fetching Logic ---
+
+/**
+ * Searches for stock symbols based on keywords.
+ * This is a mock function.
+ */
+export async function searchSymbols(keywords: string): Promise<SearchResult[]> {
+    console.log(`Searching for symbols with keywords: ${keywords}`);
+    if (!keywords) return [];
+  
+    // In a real app, you would use fetch:
+    // const url = `${BASE_URL}?function=SYMBOL_SEARCH&keywords=${keywords}&apikey=${API_KEY}`;
+    // const response = await fetch(url);
+    // const data = await response.json();
+    // if (data.Note) { // API limit reached
+    //   console.warn(data.Note);
+    //   return MOCK_SEARCH_RESULTS;
+    // }
+    // return data.bestMatches.map((match: any) => ({...}));
+  
+    await new Promise(resolve => setTimeout(resolve, 300)); // Simulate network delay
+    const lowerKeywords = keywords.toLowerCase();
+    const filtered = MOCK_SEARCH_RESULTS.filter(
+        (r) =>
+          r['1. symbol'].toLowerCase().includes(lowerKeywords) ||
+          r['2. name'].toLowerCase().includes(lowerKeywords)
+      );
+
+    return filtered.map(item => ({
+        symbol: item['1. symbol'],
+        name: item['2. name'],
+        region: item['4. region'],
+        currency: item['8. currency'],
+    }));
+}
+
 
 /**
  * Fetches data for multiple tickers.
@@ -133,6 +176,20 @@ export async function getStockDataForWatchlist(tickers: string[]): Promise<Stock
   for (const ticker of tickers) {
     if (mockApiData[ticker]) {
       results[ticker] = mockApiData[ticker];
+    } else {
+      // If the ticker is new, create some mock data for it.
+      const isUS = ticker.length <= 4 && ticker.toUpperCase() === ticker;
+      const basePrice = isUS ? Math.random() * 500 + 50 : Math.random() * 10000 + 500;
+      results[ticker] = {
+        name: `${ticker} Name`,
+        price: basePrice,
+        change: (Math.random() - 0.5) * 10,
+        changePercent: (Math.random() - 0.5) * 5,
+        historicalData: generateHistoricalData(basePrice, 30, 0.05),
+        technicalAnalysis: { movingAverage: { "50day": basePrice * 0.98, "200day": basePrice * 0.95 }, rsi: 50, macd: 0 },
+        fundamentalAnalysis: { marketCap: "N/A", peRatio: "N/A", eps: 0, dividendYield: "N/A", debtToEquity: 0 },
+        category: isUS ? 'Saham AS' : 'Saham',
+      }
     }
   }
   return results;

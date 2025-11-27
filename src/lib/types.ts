@@ -31,3 +31,10 @@ export type StockData = {
 export type StockDataCollection = {
   [ticker: string]: StockData;
 };
+
+export type SearchResult = {
+  symbol: string;
+  name: string;
+  region: string;
+  currency: string;
+};

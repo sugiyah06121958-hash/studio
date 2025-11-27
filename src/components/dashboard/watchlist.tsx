@@ -15,6 +15,7 @@ interface WatchlistProps {
   selectedTicker: string;
   setSelectedTicker: (ticker: string) => void;
   isLoading: boolean;
+  watchlistTickers: string[];
 }
 
 const getPriceDisplay = (data: StockData) => {
@@ -24,20 +25,19 @@ const getPriceDisplay = (data: StockData) => {
     return `$${data.price.toFixed(2)}`;
 }
 
-export function Watchlist({ stocks, selectedTicker, setSelectedTicker, isLoading }: WatchlistProps) {
+export function Watchlist({ stocks, selectedTicker, setSelectedTicker, isLoading, watchlistTickers }: WatchlistProps) {
   if (isLoading) {
     return (
-        <div className="px-4 space-y-2">
-            <SidebarMenuSkeleton showIcon={false} />
-            <SidebarMenuSkeleton showIcon={false} />
-            <SidebarMenuSkeleton showIcon={false} />
-            <SidebarMenuSkeleton showIcon={false} />
-            <SidebarMenuSkeleton showIcon={false} />
+        <div className="px-4 space-y-2 pt-4">
+            {watchlistTickers.map(ticker => (
+                <SidebarMenuSkeleton key={ticker} showIcon={false} />
+            ))}
         </div>
     )
   }
     
   const groupedStocks = Object.entries(stocks).reduce((acc, [ticker, data]) => {
+    if (!watchlistTickers.includes(ticker)) return acc;
     const { category } = data;
     if (!acc[category]) {
       acc[category] = [];
@@ -49,10 +49,10 @@ export function Watchlist({ stocks, selectedTicker, setSelectedTicker, isLoading
   const categories: ('Saham' | 'Saham AS' | 'Bitcoin' | 'Reksadana')[] = ['Saham', 'Saham AS', 'Bitcoin', 'Reksadana'];
 
   return (
-    <div className="px-2">
+    <div className="px-2 pt-2">
       <Accordion type="multiple" defaultValue={categories} className="w-full">
         {categories.map((category) => (
-          groupedStocks[category] && (
+          groupedStocks[category] && groupedStocks[category].length > 0 && (
             <AccordionItem value={category} key={category}>
               <AccordionTrigger className="px-2 text-sm font-semibold hover:no-underline">{category}</AccordionTrigger>
               <AccordionContent>

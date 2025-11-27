@@ -7,7 +7,6 @@ import {
   SidebarContent,
   SidebarHeader,
 } from '@/components/ui/sidebar';
-import { mockStockData } from '@/lib/mock-data';
 import type { StockData, StockDataCollection } from '@/lib/types';
 import { Header } from './header';
 import { Watchlist } from './watchlist';
@@ -16,8 +15,9 @@ import { FundamentalAnalysisCard, TechnicalAnalysisCard } from './analysis-cards
 import { AutomatedConclusionCard, BuySellSignalCard, SimplePredictionCard } from './ai-cards';
 import { getStockDataForWatchlist } from '@/lib/alpha-vantage';
 import { Skeleton } from '@/components/ui/skeleton';
+import { StockSearch } from './stock-search';
 
-const watchlistTickers = ['BBCA', 'GOTO', 'AAPL', 'GOOGL', 'MSFT', 'TSLA', 'BTC', 'RD-PASARUANG'];
+const initialWatchlist = ['BBCA', 'GOTO', 'AAPL', 'GOOGL', 'MSFT', 'TSLA', 'BTC', 'RD-PASARUANG'];
 
 function DashboardSkeleton() {
     return (
@@ -38,6 +38,7 @@ function DashboardSkeleton() {
 
 
 export function Dashboard() {
+  const [watchlistTickers, setWatchlistTickers] = useState(initialWatchlist);
   const [selectedTicker, setSelectedTicker] = useState('BBCA');
   const [stocks, setStocks] = useState<StockDataCollection | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -48,8 +49,6 @@ export function Dashboard() {
       try {
         setIsLoading(true);
         setError(null);
-        // In a real app, you might fetch details for the selected ticker separately
-        // for more up-to-date information.
         const data = await getStockDataForWatchlist(watchlistTickers);
         setStocks(data);
       } catch (err) {
@@ -60,15 +59,28 @@ export function Dashboard() {
       }
     }
     fetchData();
-  }, []);
+  }, [watchlistTickers]);
+
+  const handleAddToWatchlist = (ticker: string) => {
+    if (!watchlistTickers.includes(ticker)) {
+        const newWatchlist = [...watchlistTickers, ticker];
+        setWatchlistTickers(newWatchlist);
+        // Automatically select the newly added stock
+        setSelectedTicker(ticker);
+    }
+  };
+
 
   const stockData = stocks ? stocks[selectedTicker] : null;
 
   return (
     <div className="flex min-h-screen w-full">
       <Sidebar className="border-r flex flex-col">
-        <SidebarHeader className="p-4">
-          <h2 className="text-lg font-semibold">Daftar Pantau</h2>
+        <SidebarHeader className="p-4 border-b">
+            <h2 className="text-lg font-semibold">Daftar Pantau</h2>
+            <div className="mt-4">
+                <StockSearch onAddToWatchlist={handleAddToWatchlist} />
+            </div>
         </SidebarHeader>
         <SidebarContent>
             <Watchlist
@@ -76,6 +88,7 @@ export function Dashboard() {
               selectedTicker={selectedTicker}
               setSelectedTicker={setSelectedTicker}
               isLoading={isLoading}
+              watchlistTickers={watchlistTickers}
             />
         </SidebarContent>
       </Sidebar>
@@ -104,6 +117,9 @@ export function Dashboard() {
             </div>
           </main>
         )}
+         {!isLoading && !stockData && (
+            <div className="p-8 text-center text-muted-foreground">Pilih saham dari daftar pantau untuk melihat detail.</div>
+         )}
       </div>
     </div>
   );

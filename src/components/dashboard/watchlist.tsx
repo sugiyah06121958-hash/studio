@@ -1,9 +1,11 @@
+
 "use client";
 
 import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuSkeleton,
 } from '@/components/ui/sidebar';
 import type { StockData, StockDataCollection } from '@/lib/types';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
@@ -12,6 +14,7 @@ interface WatchlistProps {
   stocks: StockDataCollection;
   selectedTicker: string;
   setSelectedTicker: (ticker: string) => void;
+  isLoading: boolean;
 }
 
 const getPriceDisplay = (data: StockData) => {
@@ -21,7 +24,19 @@ const getPriceDisplay = (data: StockData) => {
     return `$${data.price.toFixed(2)}`;
 }
 
-export function Watchlist({ stocks, selectedTicker, setSelectedTicker }: WatchlistProps) {
+export function Watchlist({ stocks, selectedTicker, setSelectedTicker, isLoading }: WatchlistProps) {
+  if (isLoading) {
+    return (
+        <div className="px-4 space-y-2">
+            <SidebarMenuSkeleton showIcon={false} />
+            <SidebarMenuSkeleton showIcon={false} />
+            <SidebarMenuSkeleton showIcon={false} />
+            <SidebarMenuSkeleton showIcon={false} />
+            <SidebarMenuSkeleton showIcon={false} />
+        </div>
+    )
+  }
+    
   const groupedStocks = Object.entries(stocks).reduce((acc, [ticker, data]) => {
     const { category } = data;
     if (!acc[category]) {

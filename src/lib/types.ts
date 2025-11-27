@@ -25,6 +25,7 @@ export type StockData = {
   historicalData: HistoricalData[];
   technicalAnalysis: TechnicalAnalysis;
   fundamentalAnalysis: FundamentalAnalysis;
+  category: 'Saham' | 'Saham AS' | 'Bitcoin' | 'Reksadana';
 };
 
 export type StockDataCollection = {

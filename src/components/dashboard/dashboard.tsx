@@ -15,7 +15,7 @@ import { FundamentalAnalysisCard, TechnicalAnalysisCard } from './analysis-cards
 import { AutomatedConclusionCard, BuySellSignalCard, SimplePredictionCard } from './ai-cards';
 
 export function Dashboard() {
-  const [selectedTicker, setSelectedTicker] = useState('AAPL');
+  const [selectedTicker, setSelectedTicker] = useState('BBCA');
   const stocks = mockStockData as StockDataCollection;
   const stockData = stocks[selectedTicker];
 

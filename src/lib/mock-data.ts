@@ -22,6 +22,46 @@ const generateHistoricalData = (basePrice: number, days: number, volatility: num
 
 
 export const mockStockData: StockDataCollection = {
+  "BBCA": {
+    name: "Bank Central Asia",
+    price: 9250,
+    change: 50,
+    changePercent: 0.54,
+    historicalData: generateHistoricalData(9000, 30, 0.03),
+    technicalAnalysis: {
+      movingAverage: { "50day": 9100, "200day": 8800 },
+      rsi: 65,
+      macd: 25
+    },
+    fundamentalAnalysis: {
+      marketCap: "1,141T",
+      peRatio: 24.5,
+      eps: 377,
+      dividendYield: "2.5%",
+      debtToEquity: 0
+    },
+    category: "Saham"
+  },
+  "GOTO": {
+    name: "GoTo Gojek Tokopedia",
+    price: 52,
+    change: -1,
+    changePercent: -1.89,
+    historicalData: generateHistoricalData(55, 30, 0.15),
+    technicalAnalysis: {
+      movingAverage: { "50day": 58, "200day": 65 },
+      rsi: 35,
+      macd: -0.5
+    },
+    fundamentalAnalysis: {
+      marketCap: "62.4T",
+      peRatio: -4.2,
+      eps: -12.4,
+      dividendYield: "N/A",
+      debtToEquity: 0.05
+    },
+    category: "Saham"
+  },
   "AAPL": {
     name: "Apple Inc.",
     price: 172.25,
@@ -39,7 +79,8 @@ export const mockStockData: StockDataCollection = {
       eps: 6.05,
       dividendYield: "0.55%",
       debtToEquity: 1.47
-    }
+    },
+    category: 'Saham AS'
   },
   "GOOGL": {
     name: "Alphabet Inc.",
@@ -58,7 +99,8 @@ export const mockStockData: StockDataCollection = {
       eps: 5.37,
       dividendYield: "N/A",
       debtToEquity: 0.12
-    }
+    },
+    category: 'Saham AS'
   },
   "MSFT": {
     name: "Microsoft Corp.",
@@ -77,7 +119,8 @@ export const mockStockData: StockDataCollection = {
       eps: 9.54,
       dividendYield: "0.85%",
       debtToEquity: 0.45
-    }
+    },
+    category: 'Saham AS'
   },
   "TSLA": {
     name: "Tesla, Inc.",
@@ -96,6 +139,47 @@ export const mockStockData: StockDataCollection = {
       eps: 3.30,
       dividendYield: "N/A",
       debtToEquity: 0.25
-    }
+    },
+    category: 'Saham AS'
+  },
+  "BTC": {
+    name: "Bitcoin",
+    price: 68000,
+    change: 1200,
+    changePercent: 1.8,
+    historicalData: generateHistoricalData(65000, 30, 0.08),
+    technicalAnalysis: {
+      movingAverage: { "50day": 66000, "200day": 60000 },
+      rsi: 70,
+      macd: 500
+    },
+    fundamentalAnalysis: {
+      marketCap: "1.3T",
+      peRatio: "N/A",
+      eps: 0,
+      dividendYield: "N/A",
+      debtToEquity: 0
+    },
+    category: "Bitcoin"
+  },
+  "RD-PASARUANG": {
+    name: "Reksadana Pasar Uang",
+    price: 1500,
+    change: 0.5,
+    changePercent: 0.03,
+    historicalData: generateHistoricalData(1490, 30, 0.001),
+    technicalAnalysis: {
+      movingAverage: { "50day": 1495, "200day": 1480 },
+      rsi: 80,
+      macd: 0.1
+    },
+    fundamentalAnalysis: {
+      marketCap: "N/A",
+      peRatio: "N/A",
+      eps: 0,
+      dividendYield: "N/A",
+      debtToEquity: 0
+    },
+    category: "Reksadana"
   }
 };

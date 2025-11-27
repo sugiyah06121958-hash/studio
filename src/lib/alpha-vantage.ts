@@ -1,3 +1,4 @@
+
 // This is a mock implementation of the Alpha Vantage API client.
 // In a real application, you would use fetch to make API calls to Alpha Vantage.
 // You would also need to handle API key management and error handling.
@@ -131,6 +132,12 @@ export async function searchSymbols(keywords: string): Promise<SearchResult[]> {
         const response = await fetch(url);
         const data = await response.json();
 
+        // Handle cases where data is null, not an object, or an empty object
+        if (!data || typeof data !== 'object' || Object.keys(data).length === 0) {
+          console.warn("Received empty or invalid data from API.");
+          return [];
+        }
+
         if (data.Note) {
             // This happens when the API limit is reached.
             console.warn("Alpha Vantage API limit reached:", data.Note);
@@ -139,7 +146,7 @@ export async function searchSymbols(keywords: string): Promise<SearchResult[]> {
         }
 
         if (!data.bestMatches || !Array.isArray(data.bestMatches)) {
-            console.error("Invalid search results format:", data);
+            console.warn("Search results format is invalid or no matches found:", data);
             return [];
         }
 
@@ -233,5 +240,7 @@ export async function getStockDetails(ticker: string): Promise<StockData> {
 
     return newStockData;
 }
+
+    
 
     

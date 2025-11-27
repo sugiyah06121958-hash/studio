@@ -39,7 +39,7 @@ export function StockSearch({ onAddToWatchlist }: StockSearchProps) {
       fetchResults();
     } else {
       setResults([]);
-      // Do not close popover here to allow selection
+      // Jangan tutup popover di sini agar pengguna bisa memilih
     }
   }, [debouncedQuery, isPopoverOpen]);
 

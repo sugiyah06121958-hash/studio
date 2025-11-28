@@ -5,12 +5,6 @@ const nextConfig: NextConfig = {
   output: 'export',
   basePath: '/studio',
   trailingSlash: true,
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   images: {
     unoptimized: true,
     remotePatterns: [

@@ -1,21 +1,13 @@
-
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-} from '@/components/ui/sidebar';
-import type { StockData, StockDataCollection } from '@/lib/types';
+import type { StockDataCollection } from '@/lib/types';
 import { Header } from './header';
-import { Watchlist } from './watchlist';
 import { StockPriceCard } from './stock-price-card';
 import { FundamentalAnalysisCard, TechnicalAnalysisCard } from './analysis-cards';
 import { AutomatedConclusionCard, BuySellSignalCard, SimplePredictionCard } from './ai-cards';
 import { getStockDataForWatchlist, getStockDetails } from '@/lib/alpha-vantage';
 import { Skeleton } from '@/components/ui/skeleton';
-import { StockSearch } from './stock-search';
 import { useToast } from '@/hooks/use-toast';
 
 const initialWatchlist = ['BBCA', 'GOTO', 'AAPL', 'GOOGL', 'MSFT', 'TSLA', 'BTC', 'RD-PASARUANG'];
@@ -116,35 +108,20 @@ export function Dashboard() {
   const stockData = stocks ? stocks[selectedTicker] : null;
 
   return (
-    <div className="flex min-h-screen w-full">
-      <Sidebar className="border-r flex flex-col">
-        <SidebarHeader className="p-4 border-b">
-            <h2 className="text-lg font-semibold">Daftar Pantau</h2>
-            <div className="mt-4">
-                <StockSearch onAddToWatchlist={handleAddToWatchlist} />
-            </div>
-        </SidebarHeader>
-        <SidebarContent>
-            <Watchlist
-              stocks={stocks ?? {}}
-              selectedTicker={selectedTicker}
-              setSelectedTicker={setSelectedTicker}
-              isLoading={isLoading}
-              watchlistTickers={watchlistTickers}
-            />
-        </SidebarContent>
-      </Sidebar>
+    <div className="flex flex-col min-h-screen w-full bg-background">
+      <Header
+        stocks={stocks ?? {}}
+        selectedTicker={selectedTicker}
+        setSelectedTicker={setSelectedTicker}
+        isLoading={isLoading}
+        watchlistTickers={watchlistTickers}
+        onAddToWatchlist={handleAddToWatchlist}
+      />
       <div className="flex flex-col w-full flex-1">
-        <Header
-          stocks={stocks ?? {}}
-          selectedTicker={selectedTicker}
-          setSelectedTicker={setSelectedTicker}
-          isLoading={isLoading}
-        />
         {isLoading && <DashboardSkeleton />}
         {error && !isLoading && <div className="p-8 text-center text-red-500">{error}</div>}
         {!isLoading && !error && stockData && (
-          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-background">
+          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               <div className="md:col-span-2 xl:col-span-3">
                 <StockPriceCard stock={stockData} ticker={selectedTicker} />
@@ -166,5 +143,3 @@ export function Dashboard() {
     </div>
   );
 }
-
-    

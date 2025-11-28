@@ -1,14 +1,10 @@
-
 "use client";
 
-import {
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarMenuSkeleton,
-} from '@/components/ui/sidebar';
 import type { StockData, StockDataCollection } from '@/lib/types';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
+import { Button } from '../ui/button';
+import { ScrollArea } from '../ui/scroll-area';
+import { Skeleton } from '../ui/skeleton';
 
 interface WatchlistProps {
   stocks: StockDataCollection;
@@ -28,9 +24,9 @@ const getPriceDisplay = (data: StockData) => {
 export function Watchlist({ stocks, selectedTicker, setSelectedTicker, isLoading, watchlistTickers }: WatchlistProps) {
   if (isLoading) {
     return (
-        <div className="px-4 space-y-2 pt-4">
-            {watchlistTickers.map(ticker => (
-                <SidebarMenuSkeleton key={ticker} showIcon={false} />
+        <div className="px-1 space-y-2">
+            {Array.from({length: 5}).map((_, i) => (
+                <Skeleton key={i} className="h-16 w-full" />
             ))}
         </div>
     )
@@ -49,20 +45,21 @@ export function Watchlist({ stocks, selectedTicker, setSelectedTicker, isLoading
   const categories: ('Saham' | 'Saham AS' | 'Bitcoin' | 'Reksadana')[] = ['Saham', 'Saham AS', 'Bitcoin', 'Reksadana'];
 
   return (
-    <div className="px-2 pt-2">
+    <ScrollArea className="h-96">
       <Accordion type="multiple" defaultValue={categories} className="w-full">
         {categories.map((category) => (
           groupedStocks[category] && groupedStocks[category].length > 0 && (
             <AccordionItem value={category} key={category}>
               <AccordionTrigger className="px-2 text-sm font-semibold hover:no-underline">{category}</AccordionTrigger>
               <AccordionContent>
-                <SidebarMenu>
+                <div className="flex flex-col gap-1">
                   {groupedStocks[category].map(([ticker, data]) => (
-                    <SidebarMenuItem key={ticker}>
-                      <SidebarMenuButton
+                    <Button
+                        key={ticker}
+                        variant="ghost"
                         onClick={() => setSelectedTicker(ticker)}
-                        isActive={selectedTicker === ticker}
-                        className="justify-between h-auto py-2"
+                        data-active={selectedTicker === ticker}
+                        className="justify-between h-auto py-2 data-[active=true]:bg-accent"
                       >
                         <div className="flex flex-col text-left">
                           <span className="font-semibold">{ticker}</span>
@@ -72,15 +69,14 @@ export function Watchlist({ stocks, selectedTicker, setSelectedTicker, isLoading
                           <span>{getPriceDisplay(data)}</span>
                           <span className="text-xs">{data.change.toFixed(2)} ({data.changePercent.toFixed(2)}%)</span>
                         </div>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
+                    </Button>
                   ))}
-                </SidebarMenu>
+                </div>
               </AccordionContent>
             </AccordionItem>
           )
         ))}
       </Accordion>
-    </div>
+    </ScrollArea>
   );
 }

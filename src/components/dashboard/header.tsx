@@ -30,7 +30,7 @@ export function Header({ stocks, selectedTicker, setSelectedTicker, isLoading, w
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-card/80 px-4 backdrop-blur-sm sm:px-6">
       <div className="flex items-center gap-2">
         <Logo className="h-6 w-6 text-primary" />
-        <h1 className="text-xl font-bold tracking-tight">StockSense AI</h1>
+        <h1 className="text-xl font-bold tracking-tight">Analisis Saham AI</h1>
       </div>
 
       <nav className="ml-auto flex items-center gap-4">

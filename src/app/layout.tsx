@@ -4,7 +4,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'StockSense AI',
+  title: 'Analisis Saham AI',
   description: 'Analisis dan wawasan saham yang didukung AI',
 };
 

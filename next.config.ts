@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   output: 'export',
   basePath: '/studio',
+  trailingSlash: true,
   typescript: {
     ignoreBuildErrors: true,
   },

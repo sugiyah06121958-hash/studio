@@ -4,14 +4,12 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Sparkles, Bot, BrainCircuit } from 'lucide-react';
-import { generateBuySellSignals } from '@/ai/flows/generate-buy-sell-signals';
-import { provideAutomatedStockConclusion } from '@/ai/flows/provide-automated-stock-conclusion';
-import { predictFutureStockPrice } from '@/ai/flows/predict-future-stock-price';
 import type { StockData } from '@/lib/types';
-import type { GenerateBuySellSignalsOutput } from '@/ai/flows/generate-buy-sell-signals';
-import type { AutomatedStockConclusionOutput } from '@/ai/flows/provide-automated-stock-conclusion';
-import type { PredictFutureStockPriceOutput } from '@/ai/flows/predict-future-stock-price';
+import type { GenerateBuySellSignalsInput, GenerateBuySellSignalsOutput } from '@/ai/flows/generate-buy-sell-signals';
+import type { AutomatedStockConclusionInput, AutomatedStockConclusionOutput } from '@/ai/flows/provide-automated-stock-conclusion';
+import type { PredictFutureStockPriceInput, PredictFutureStockPriceOutput } from '@/ai/flows/predict-future-stock-price';
 import { Badge } from '../ui/badge';
+import { runFlow } from '@/ai/client';
 
 interface AICardProps {
   stockData: StockData;
@@ -66,11 +64,12 @@ export function BuySellSignalCard({ stockData, ticker }: AICardProps) {
     setIsLoading(true);
     setResult(null);
     try {
-      const res = await generateBuySellSignals({
+      const input: GenerateBuySellSignalsInput = {
         ticker,
         technicalAnalysis: JSON.stringify(stockData.technicalAnalysis),
         fundamentalAnalysis: JSON.stringify(stockData.fundamentalAnalysis),
-      });
+      };
+      const res = await runFlow<GenerateBuySellSignalsOutput>('generateBuySellSignalsFlow', input);
       setResult(res);
     } catch (error) {
       console.error('Error generating signals:', error);
@@ -98,8 +97,8 @@ export function BuySellSignalCard({ stockData, ticker }: AICardProps) {
             <p className="text-sm text-muted-foreground">{result.reason}</p>
           </div>
         )}
-        {!isLoading && (
-          <Button onClick={handleGenerate}>
+        {!isLoading && !result && (
+          <Button onClick={handleGenerate} disabled={isLoading}>
             <Sparkles className="mr-2 h-4 w-4" />
             Hasilkan Sinyal
           </Button>
@@ -117,12 +116,13 @@ export function AutomatedConclusionCard({ stockData, ticker }: AICardProps) {
     setIsLoading(true);
     setResult(null);
     try {
-      const res = await provideAutomatedStockConclusion({
+      const input: AutomatedStockConclusionInput = {
         ticker,
         technicalAnalysis: JSON.stringify(stockData.technicalAnalysis),
         fundamentalAnalysis: JSON.stringify(stockData.fundamentalAnalysis),
         buySellSignals: 'Dihasilkan berdasarkan kombinasi TA dan FA.',
-      });
+      };
+      const res = await runFlow<AutomatedStockConclusionOutput>('provideAutomatedStockConclusionFlow', input);
       setResult(res);
     } catch (error) {
       console.error('Error generating conclusion:', error);
@@ -147,8 +147,8 @@ export function AutomatedConclusionCard({ stockData, ticker }: AICardProps) {
             <Badge variant={getSignalBadgeVariant(result.conclusion)}>{result.conclusion}</Badge>
           </div>
         )}
-        {!isLoading && (
-          <Button onClick={handleGenerate}>
+        {!isLoading && !result && (
+          <Button onClick={handleGenerate} disabled={isLoading}>
             <Sparkles className="mr-2 h-4 w-4" />
             Hasilkan Kesimpulan
           </Button>
@@ -166,11 +166,12 @@ export function SimplePredictionCard({ stockData, ticker }: AICardProps) {
       setIsLoading(true);
       setResult(null);
       try {
-        const res = await predictFutureStockPrice({
+        const input: PredictFutureStockPriceInput = {
           ticker,
           timeSeriesData: JSON.stringify(stockData.historicalData),
           financialNews: 'Sentimen pasar saat ini beragam karena laporan inflasi terbaru.',
-        });
+        };
+        const res = await runFlow<PredictFutureStockPriceOutput>('predictFutureStockPriceFlow', input);
         setResult(res);
       } catch (error) {
         console.error('Error generating prediction:', error);
@@ -202,8 +203,8 @@ export function SimplePredictionCard({ stockData, ticker }: AICardProps) {
               <p className="text-sm text-muted-foreground">{result.rationale}</p>
             </div>
           )}
-          {!isLoading && (
-            <Button onClick={handleGenerate}>
+          {!isLoading && !result &&(
+            <Button onClick={handleGenerate} disabled={isLoading}>
               <Sparkles className="mr-2 h-4 w-4" />
               Hasilkan Prediksi
             </Button>

@@ -1,5 +1,3 @@
-'use server';
-
 /**
  * @fileOverview This file defines a Genkit flow for providing an automated stock conclusion (Buy/Hold/Sell)
  * based on technical and fundamental analysis.
@@ -50,7 +48,7 @@ Sinyal Beli/Jual: {{{buySellSignals}}}
 Kesimpulan:`,
 });
 
-const provideAutomatedStockConclusionFlow = ai.defineFlow(
+export const provideAutomatedStockConclusionFlow = ai.defineFlow(
   {
     name: 'provideAutomatedStockConclusionFlow',
     inputSchema: AutomatedStockConclusionInputSchema,

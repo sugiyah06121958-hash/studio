@@ -1,5 +1,3 @@
-'use server';
-
 /**
  * @fileOverview Predicts future stock prices using time series analysis and incorporates relevant financial news.
  *
@@ -69,17 +67,10 @@ const predictFutureStockPricePrompt = ai.definePrompt({
 
   Pertimbangkan relevansi berita keuangan menggunakan alat assessNewsRelevance.
 
-  Berikan prediksi, tingkat kepercayaan (0-1), dan alasan untuk prediksi Anda.
-
-  Ikuti format ini untuk output Anda:
-  {
-    "prediction": "Prediksi harga saham",
-    "confidence": 0.8,
-    "rationale": "Alasan untuk prediksi"
-  }`,
+  Berikan prediksi, tingkat kepercayaan (0-1), dan alasan untuk prediksi Anda.`,
 });
 
-const predictFutureStockPriceFlow = ai.defineFlow(
+export const predictFutureStockPriceFlow = ai.defineFlow(
   {
     name: 'predictFutureStockPriceFlow',
     inputSchema: PredictFutureStockPriceInputSchema,

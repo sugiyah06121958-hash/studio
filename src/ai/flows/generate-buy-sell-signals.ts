@@ -55,7 +55,7 @@ Pertimbangkan hal berikut:
 - Analisis Fundamental: {{{fundamentalAnalysis}}}
 
 Gunakan alat analyzeNews untuk memeriksa berita terkini terkait saham tersebut. Masukkan berita relevan apa pun ke dalam rekomendasi Anda.`,
-  prompt: `Mengingat analisis di atas, apa sinyal beli/jual Anda untuk ${'{{{ticker}}}'}? Jelaskan alasan Anda.`, // Changed ticker reference to Handlebars syntax
+  prompt: `Mengingat analisis di atas, apa sinyal beli/jual Anda untuk {{{ticker}}}? Jelaskan alasan Anda.`,
 });
 
 const generateBuySellSignalsFlow = ai.defineFlow(

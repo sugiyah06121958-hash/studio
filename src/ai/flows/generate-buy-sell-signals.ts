@@ -65,8 +65,7 @@ const generateBuySellSignalsFlow = ai.defineFlow(
     outputSchema: GenerateBuySellSignalsOutputSchema,
   },
   async input => {
-    const newsAnalysis = await analyzeNews({ticker: input.ticker});
-    const {output} = await prompt({...input, newsAnalysis});
+    const {output} = await prompt(input);
     return output!;
   }
 );

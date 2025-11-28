@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   output: 'export',
   basePath: '/studio',
+  assetPrefix: '/studio/',
   images: {
     unoptimized: true,
     remotePatterns: [
